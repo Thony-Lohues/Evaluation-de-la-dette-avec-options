@@ -1,0 +1,28 @@
+def Dette_convertible_rachetable(three, callable_price, q, M, n, r, sigma, theta, h, y, T) :
+    
+        
+    D = three.copy()
+        
+    
+    for j in range (0, n + 1) :    
+        x = three[j*2, n]
+        if x >= M/q :
+            D[j*2, n] = x * q
+        elif M/q > x and x >= callable_price and callable_price < M :
+            D[j*2, n] = callable_price
+        elif M/q > x >= M :
+            D[j*2, n] = M
+        else :
+            D[j*2, n] = theta *  x
+                
+    u = np.exp(sigma * np.sqrt(h))
+    d = np.exp(-sigma * np.sqrt(h))
+    pi = (np.exp((r-y)*h) - d) / (u-d)
+    
+
+    for i in range (1, n + 1) :
+        for j in range (0, n-i+1) :
+            D[i + j * 2, n - i] = np.minimum(np.maximum((pi*D[i+j*2-1, n-i+1] + (1-pi)*D[i+j*2+1, n-i+1]) * np.exp(-r* h), three[i+j*2, n-i] * q),np.maximum(callable_price, q * three[i+j*2, n-i]))
+
+    
+    return D
