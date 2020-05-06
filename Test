@@ -1,0 +1,19 @@
+Valeur des actifs :                      v = 2724
+Coefficient de conversion :              q = 0.3
+Prix de rachat :                         1 550 $
+Sigma :                                  20.23%
+M (valeur nominale dette long terme) :   1 600    
+r :                                      2%
+T :                                      10 ans
+n :                                      2 520         (T*252)
+h :                                      0.0039         (T/n)       
+theta (Taux de recouvrement) :           1
+
+
+Dette_convertible = Dette_convertible(three, q, M, n, r, sigma, theta, h, y, T)
+Dette_rachetable = Dette_rachetable(three, callable_price, M, n, r, sigma, theta, h, y, T)
+Dette_conv_call = Dette_convertible_rachetable(three, callable_price, q, M, n, r, sigma, theta, h, y, T)
+
+
+
+
