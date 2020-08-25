@@ -11,13 +11,13 @@ def Merton(v,M,r,y,sigma,T,theta,h,n) :
 
 
 
-def Dette_rachetable(three, callable_price, M, n, r, sigma, theta, h, y, T) :
+def Dette_rachetable(tree, callable_price, M, n, r, sigma, theta, h, y, T) :
 
-    D = three.copy()
+    D = tree.copy()
     
         
     for j in range(0, n):
-        D[1+j*2, n-1] = np.minimum(Merton(three[1+j*2, n-1],M,r,y,sigma,h,theta,h,h), callable_price)
+        D[1+j*2, n-1] = np.minimum(Merton(tree[1+j*2, n-1],M,r,y,sigma,h,theta,h,h), callable_price)
 
     u = np.exp(sigma * np.sqrt(h))
     d = np.exp(-sigma * np.sqrt(h))
