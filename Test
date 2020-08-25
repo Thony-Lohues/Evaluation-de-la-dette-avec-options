@@ -10,9 +10,9 @@ h :                                      0.0039         (T/n)
 theta (Taux de recouvrement) :           1
 
 
-Dette_convertible = Dette_convertible(three, q, M, n, r, sigma, theta, h, y, T)
-Dette_rachetable = Dette_rachetable(three, callable_price, M, n, r, sigma, theta, h, y, T)
-Dette_conv_call = Dette_convertible_rachetable(three, callable_price, q, M, n, r, sigma, theta, h, y, T)
+Dette_convertible = Dette_convertible(tree, q, M, n, r, sigma, theta, h, y, T)
+Dette_rachetable = Dette_rachetable(tree, callable_price, M, n, r, sigma, theta, h, y, T)
+Dette_conv_call = Dette_convertible_rachetable(tree, callable_price, q, M, n, r, sigma, theta, h, y, T)
 
 
 
