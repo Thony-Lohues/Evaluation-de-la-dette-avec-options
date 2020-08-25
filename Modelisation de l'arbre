@@ -1,4 +1,4 @@
-def binomial_three(v, sigma, n, h):
+def binomial_tree(v, sigma, n, h):
     u = np.exp(sigma * np.sqrt(h))
     d = np.exp(-sigma * np.sqrt(h))
     s = (n * 2 + 1, n + 1)
