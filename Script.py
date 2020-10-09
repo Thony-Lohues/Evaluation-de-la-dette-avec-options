@@ -138,7 +138,7 @@ M = cap_struct.iloc[2, 1]
 
 # Calcul de la valeur des actifs avec arbre binomial
 
-def binomial_three(v, sigma, n, h):
+def binomial_tree(v, sigma, n, h):
     u = np.exp(sigma * np.sqrt(h))
     d = np.exp(-sigma * np.sqrt(h))
     s = (n * 2 + 1, n + 1)
@@ -153,21 +153,21 @@ def binomial_three(v, sigma, n, h):
     return arbre
 
 
-def option_CD(three,q,M,sigma,theta,r,y,n) :
+def option_CD(tree,q,M,sigma,theta,r,y,n) :
 
-    option_three = three.copy()
+    option_tree = tree.copy()
 
     for i in range (0, n*2 + 1) :
         if i % 2 == 0 :
-            x = three[i, -1]
+            x = tree[i, -1]
             if x >= M/q :
-                option_three[i, -1] = x * q
+                option_tree[i, -1] = x * q
             elif M/q > x >= M :
-                option_three[i, -1] = M
+                option_tree[i, -1] = M
             else :
-                option_three[i, -1] = theta * x
+                option_tree[i, -1] = theta * x
         else :
-            option_three[i, -1] = 0
+            option_tree[i, -1] = 0
 
     u = np.exp(sigma)
     d = np.exp(-sigma)
@@ -175,13 +175,13 @@ def option_CD(three,q,M,sigma,theta,r,y,n) :
 
     for i in range (1, n + 1) :
         for j in range (0, n-i+1) :
-            option_three[i + j * 2, n - i] = np.maximum((pi * option_three[i-1+j*2,n-i+1] + (1-pi) * option_three[i+1+j*2,n-i+1]) * np.exp(-r), three[i+j*2, n-i] * q)
+            option_tree[i + j * 2, n - i] = np.maximum((pi * option_tree[i-1+j*2,n-i+1] + (1-pi) * option_tree[i+1+j*2,n-i+1]) * np.exp(-r), tree[i+j*2, n-i] * q)
 
-    return option_three
+    return option_tree
 
 
-three = binomial_three(v, sigma, n, h)
-Dette_convertible = option_CD(three,q,M,sigma,theta,r,y,n)
+tree = binomial_tree(v, sigma, n, h)
+Dette_convertible = option_CD(tree,q,M,sigma,theta,r,y,n)
 print('La valeur de la dette convertible est : {:.2f} $'.format(Dette_convertible[n,0]))
 
 
@@ -193,8 +193,8 @@ return_dette_conv = []
 for t in (np.linspace(1,10,10)) :
     n = np.int(t) * 252
     h = t/n
-    three = binomial_three(v, sigma, n, h)
-    Dette_convertible_ = option_CD(three, q, M, sigma, theta, r, y, n)
+    tree = binomial_tree(v, sigma, n, h)
+    Dette_convertible_ = option_CD(tree, q, M, sigma, theta, r, y, n)
     Dette_convertible_array = np.append(Dette_convertible_array, Dette_convertible_[n,0])
     return_dette_conv = np.append(return_dette_conv, np.log(M / Dette_convertible_array[np.int(t) - 1]) / np.sqrt(np.int(t)))\
 
@@ -219,12 +219,12 @@ def Merton_Debt(v, M, r, n, sigma, theta):
     return D
 
 
-def callable_option(three, callable_price, M, n, r, sigma, theta, h, y) :
+def callable_option(tree, callable_price, M, n, r, sigma, theta, h, y) :
 
-    option_three = three.copy()
+    option_tree = tree.copy()
 
     for i in range(0, n+1):
-        option_three[i*2, n] = np.minimum(Merton_Debt(three[i*2, n], M, r, h, sigma, theta), callable_price)
+        option_tree[i*2, n] = np.minimum(Merton_Debt(tree[i*2, n], M, r, h, sigma, theta), callable_price)
 
     u = np.exp(sigma)
     d = np.exp(-sigma)
@@ -232,16 +232,16 @@ def callable_option(three, callable_price, M, n, r, sigma, theta, h, y) :
 
     for i in range (1, n+1) :
         for j in range (0, n-i+1) :
-            option_three[i+j*2, n-i] = np.minimum((pi*option_three[i+j*2-1, n-i+1] + (1-pi)*option_three[i+j*2+1, n-i+1]) * np.exp(-r*h), callable_price)
+            option_tree[i+j*2, n-i] = np.minimum((pi*option_tree[i+j*2-1, n-i+1] + (1-pi)*option_tree[i+j*2+1, n-i+1]) * np.exp(-r*h), callable_price)
 
-    return option_three
+    return option_tree
 
 
 
 ### Calcul
 
-three = binomial_three(v, sigma, n, h)
-Dette_rachetable = callable_option(three, callable_price, M, n, r, sigma, theta, h, y)
+tree = binomial_tree(v, sigma, n, h)
+Dette_rachetable = callable_option(tree, callable_price, M, n, r, sigma, theta, h, y)
 print('La valeur de la dette rachetable est : {:.2f} $'.format(Dette_rachetable[n,0]))
 
 
@@ -253,8 +253,8 @@ return_dette_call  = []
 for t in (np.linspace(1,10,10)) :
     n = np.int(t) * 252
     h = t / n
-    three = binomial_three(v, sigma, n, h)
-    Dette_callable_ = callable_option(three, callable_price, M, n, r, sigma, theta, h, y)
+    tree = binomial_tree(v, sigma, n, h)
+    Dette_callable_ = callable_option(tree, callable_price, M, n, r, sigma, theta, h, y)
     Dette_callable_array = np.append(Dette_callable_array, Dette_callable_[n,0])
     return_dette_call  = np.append(return_dette_call , np.log(M/Dette_callable_array[np.int(t) - 1]) / np.sqrt(np.int(t)))
 
@@ -268,21 +268,21 @@ for t in (np.linspace(1,10,10)) :
 
 
 
-def option_Conv_Call(three,q,M,sigma,theta,r,y,n) :
+def option_Conv_Call(tree,q,M,sigma,theta,r,y,n) :
 
-    option_three = three.copy()
+    option_tree = tree.copy()
 
     for i in range (0, n*2 + 1) :
         if i % 2 == 0 :
-            x = three[i, -1]
+            x = tree[i, -1]
             if x >= M/q :
-                option_three[i, -1] = x * q
+                option_tree[i, -1] = x * q
             elif M/q > x >= M :
-                option_three[i, -1] = M
+                option_tree[i, -1] = M
             else :
-                option_three[i, -1] = theta * x
+                option_tree[i, -1] = theta * x
         else :
-            option_three[i, -1] = 0
+            option_tree[i, -1] = 0
 
     u = np.exp(sigma)
     d = np.exp(-sigma)
@@ -290,12 +290,12 @@ def option_Conv_Call(three,q,M,sigma,theta,r,y,n) :
 
     for i in range (1, n + 1) :
         for j in range (0, n-i+1) :
-            option_three[i + j * 2, n - i] = np.minimum(np.maximum((pi * option_three[i-1+j*2,n-i+1] + (1-pi) * option_three[i+1+j*2,n-i+1]) * np.exp(-r*h), three[i+j*2, n-i] * q), np.maximum(callable_price, three[i+j*2, n-i] * q))
+            option_tree[i + j * 2, n - i] = np.minimum(np.maximum((pi * option_tree[i-1+j*2,n-i+1] + (1-pi) * option_tree[i+1+j*2,n-i+1]) * np.exp(-r*h), tree[i+j*2, n-i] * q), np.maximum(callable_price, tree[i+j*2, n-i] * q))
 
 
-    return option_three
+    return option_tree
 
-Dette_CC = option_Conv_Call(three,q,M,sigma,theta,r,y,n)
+Dette_CC = option_Conv_Call(tree,q,M,sigma,theta,r,y,n)
 print('La valeur de la dette convertible rachetable est : {:.2f} $'.format(Dette_CC[n,0]))
 
 
@@ -307,8 +307,8 @@ return_dette_conv_call = []
 for t in (np.linspace(1,10,10)) :
     n = np.int(t) * 252
     h = t / n
-    three = binomial_three(v, sigma, n, h)
-    Dette_CC_ = option_Conv_Call(three,q,M,sigma,theta,r,y,n)
+    tree = binomial_tree(v, sigma, n, h)
+    Dette_CC_ = option_Conv_Call(tree,q,M,sigma,theta,r,y,n)
     Dette_CC_array = np.append(Dette_CC_array, Dette_CC_[n,0])
     return_dette_conv_call  = np.append(return_dette_conv_call , np.log(M/Dette_CC_array[np.int(t) - 1]) / np.sqrt(np.int(t)))
 
